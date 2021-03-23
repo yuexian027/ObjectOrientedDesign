@@ -9,15 +9,17 @@ import java.util.*;
 
 public class BattleShip{
     public enum GameState{
-        Tie,Redwin,Bluewin, Continue
+        Redwin,Bluewin, Continue
     }
     public PlayerBattleShip[] players = new PlayerBattleShip[2];
+    //the board to place your own ships
     public BoardBattleShip[] boardBattleShips = new BoardBattleShip[2];
+    //the board to place bomb
     public BoardBattleShip[] attackBoards = new BoardBattleShip[2];
     public int[][] fleets = new int[2][];
     public BoardBattleShip redBoard;
     public BoardBattleShip redAttack;
-    public BoardBattleShip blueBoardBattleShip;
+    public BoardBattleShip blueBoard;
     public BoardBattleShip blueAttack;
     public PlayerBattleShip currTurn;
     public GameState status = GameState.Continue;
@@ -31,11 +33,11 @@ public class BattleShip{
         players[0] = p1;
         players[1] = p2;
         redBoard = new BoardBattleShip(x,y);
-        blueBoardBattleShip = new BoardBattleShip(x,y);
+        blueBoard = new BoardBattleShip(x,y);
         redAttack = new BoardBattleShip(x,y);
         blueAttack = new BoardBattleShip(x,y);
         boardBattleShips[0] = redBoard;
-        boardBattleShips[1] = blueBoardBattleShip;
+        boardBattleShips[1] = blueBoard;
         attackBoards[0] = redAttack;
         attackBoards[1] = blueAttack;
         redFleet = new int[shipInfo.length];
@@ -48,6 +50,7 @@ public class BattleShip{
         else
             this.currTurn = p2;
         //shipInfo is the array : index is ship type label and value is size of the ship
+        //the fleet array is used to count the number of ships in board
         for(int i = 0; i < shipInfo.length;i++){
             redFleet[i] = shipInfo[i];
             blueFleet[i] = shipInfo[i];
@@ -76,6 +79,7 @@ public class BattleShip{
             
             for(int i = 0; i < size; i++){
                 boardBattleShips[ind].squareBattleShips[xo][yo + i].shipLabel = ship.label;
+                boardBattleShips[ind].squareBattleShips[xo][yo + i].name = ship.name;
             }
         }
         if(!ship.direction ){
@@ -88,6 +92,7 @@ public class BattleShip{
             }
             for(int i = 0; i < size; i++){
                 boardBattleShips[ind].squareBattleShips[xo + i][yo].shipLabel = ship.label;
+                boardBattleShips[ind].squareBattleShips[xo + i][yo].name = ship.name;
             }
         }
         return true;
@@ -98,12 +103,13 @@ public class BattleShip{
             ind = 0;
         }
         else ind = 1;
-        
+            //player place a bomb in his own attack board
             SquareBattleShip target = attackBoards[ind].squareBattleShips[x][y];
             Attack attack = new Attack(playerBattleShip, target);
             boolean res = this.tryAttack(attack, playerBattleShip);
             if(!res){System.out.println(playerBattleShip.color + " " + "invalid attack,retry");res = false;}
             if(res){System.out.println(playerBattleShip.color + " " + "valid attack");}
+            //if this is an legal attack, check whether this attack hit a ship
             if(res){
                boolean hit = this.makeAttack(attack, playerBattleShip);
                if(hit){
@@ -123,21 +129,28 @@ public class BattleShip{
     }
     private boolean makeAttack(Attack attack, PlayerBattleShip playerBattleShip){
         int ind = 0;
+        int ind1 = 1;
         if(playerBattleShip.color == 0){
             ind = 1;
+            ind1 = 0;
         }
         else ind = 0;
         attacksPlayed.add(attack);
-        //assume current player is red
-        //update curr fleet info for blue and put a hit lable in bludBoard if hit successfully
         int x = attack.destination.x;
         int y = attack.destination.y;
+        //assume current player is red
+        //update the attackBoard of red
+        attackBoards[ind1].squareBattleShips[x][y].hit = true;
+        //update curr fleet info for blue and put a hit label in bludBoard if hit successfully
+
         boolean hit = false;
-            if(boardBattleShips[ind].squareBattleShips[x][y].shipLabel != 0){
-                boardBattleShips[ind].squareBattleShips[x][y].hit = true;
-                fleets[ind][boardBattleShips[ind].squareBattleShips[x][y].shipLabel - 1]--;
-                if(fleets[ind][boardBattleShips[ind].squareBattleShips[x][y].shipLabel - 1] == 0){
-                    System.out.println("a ship of  "+ players[ind] + "  sink");
+            SquareBattleShip square = boardBattleShips[ind].squareBattleShips[x][y];
+            if(square.shipLabel != 0){
+                square.hit = true;
+                fleets[ind][square.shipLabel - 1]--;
+                System.out.println("hit" + boardBattleShips[ind].squareBattleShips[x][y].shipLabel);
+                if(fleets[ind][square.shipLabel - 1] == 0){
+                    System.out.println(square.name +  "  sink");
                 }
                 hit = true;
             }
@@ -149,6 +162,7 @@ public class BattleShip{
         if(win){
            if(currTurn.color == 0) status = GameState.Redwin;
            else status = GameState.Bluewin;
+           return true;
         }
         if(currTurn.equals(players[0])) currTurn = players[1];
         else currTurn = players[0];
@@ -157,7 +171,7 @@ public class BattleShip{
     public SquareBattleShip[][]getBoard(PlayerBattleShip playerBattleShip){
             int ind = 0;
             if(playerBattleShip.color == 0){
-                ind = 1;
+                ind = 0;
             }
             else ind = 1;
             return boardBattleShips[ind].getBoard();
@@ -172,12 +186,12 @@ public class BattleShip{
         PlayerBattleShip playerBattleShip = new PlayerBattleShip(0);
         //Assigned blue to cpu player;
         PlayerBattleShip cpu = new PlayerBattleShip(1);
-        //1: Carrier 3 2: Submarine2 3: Destroyer 1
-        int[] shipInfo = new int[]{2};
+        //1: Carrier 3 2: Submarine 2
+        int[] shipInfo = new int[]{3};
         Game.initialize(playerBattleShip, cpu, 10,10,shipInfo);
         
         // arrange red fleet
-        System.out.println("Arrage your fleets:");
+        System.out.println("Arrange your fleets:");
         Scanner scan0 = new Scanner(System.in);
         System.out.println("Input Ship Type");
         int label = scan0.nextInt();
@@ -193,12 +207,16 @@ public class BattleShip{
         
         System.out.println("Input Ship y0");
         int y0 = scan0.nextInt();
+
+        System.out.println("Input Ship type");
+        String name = scan0.next();
+
         
-        Ship redShip = new Ship(size, label, direction,x0,y0);
+        Ship redShip = new Ship(size, label, direction,x0,y0,name);
         boolean ans = Game.arrangeShips(playerBattleShip, redShip);
         
         // arrange blue fleet
-        System.out.println("Arrage your fleets:");
+        System.out.println("Arrange your fleets:");
         scan0 = new Scanner(System.in);
         System.out.println("Input Ship Type");
         label = scan0.nextInt();
@@ -214,8 +232,11 @@ public class BattleShip{
         
         System.out.println("Input Ship y0");
         y0 = scan0.nextInt();
+
+        System.out.println("Input Ship type");
+        name = scan0.next();
         
-        Ship blueShip = new Ship(size, label, direction,x0,y0);
+        Ship blueShip = new Ship(size, label, direction,x0,y0,name);
         ans = Game.arrangeShips(cpu,blueShip);
         
         

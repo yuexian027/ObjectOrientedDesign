@@ -7,10 +7,8 @@
  */
 public class PlayerBattleShip {
     public int color;//0 for red and 1 for blue
-    //public int piece;
+    public int[] fleet;
     public PlayerBattleShip(int color){
         this.color = color;
-        //this.piece = isO == true ? 1:-1;
-        
     }
 }

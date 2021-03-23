@@ -11,13 +11,15 @@ public class Ship {
     public int startX;
     public int startY;
     public boolean direction;
-    //0 for horizontal;
-    //1 for vertical;
-    public Ship(int size, int label, boolean direction, int x, int y){
+    public String name;
+    //true for horizontal;
+    //false for vertical;
+    public Ship(int size, int label, boolean direction, int x, int y, String name){
         this.size = size;
         this.label = label;
+        this.direction = direction;
         this.startX = x;
         this.startY = y;
-    
+        this.name = name;
     }
 }
