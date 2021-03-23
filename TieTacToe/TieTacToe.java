@@ -6,7 +6,7 @@
  * @version (a version number or a date)
  */
 import java.util.*;
-import java.util.Random;
+
 public class TieTacToe {
     public enum GameState{
         Tie,Owin,Xwin, Continue

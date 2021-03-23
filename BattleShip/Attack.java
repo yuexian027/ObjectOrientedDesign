@@ -6,11 +6,11 @@
  * @version (a version number or a date)
  */
 public class Attack {
-    public Player player;
+    public PlayerBattleShip playerBattleShip;
     //attack target
-    public Square destination;
-    public Attack(Player player, Square destination){
-        this.player = player;
+    public SquareBattleShip destination;
+    public Attack(PlayerBattleShip playerBattleShip, SquareBattleShip destination){
+        this.playerBattleShip = playerBattleShip;
         this.destination = destination;
     }
         
