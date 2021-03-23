@@ -166,7 +166,7 @@ public class BattleShip{
     
        
     
-    public static void main(){
+    public static void main(String[] args){
         BattleShip Game = new BattleShip();
         //Assigned red to Human player
         PlayerBattleShip playerBattleShip = new PlayerBattleShip(0);

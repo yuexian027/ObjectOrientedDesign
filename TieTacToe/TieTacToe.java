@@ -62,7 +62,7 @@ public class TieTacToe {
         return true;
     }    
     
-    public static void main(){
+    public static void main(String[] args){
         TieTacToe Game = new TieTacToe();
         Player player = new Player(true);
         Player cpu = new Player(false);
