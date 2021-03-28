@@ -1,0 +1,3 @@
+enum Access{
+    free, freeForMember
+}
