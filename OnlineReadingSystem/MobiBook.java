@@ -7,7 +7,8 @@ public class MobiBook extends Book{
 
     @Override
     public Book accept(Visitor visitor) {
-        visitor.visit(this);
+        Book newBook = visitor.visit(this);
+        return newBook;
     }
 
 

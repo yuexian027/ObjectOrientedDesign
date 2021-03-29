@@ -1,4 +1,4 @@
-public class downloaderFactory {
+public class DownloaderFactory {
 
     public EBookDownloader downLoadEBook (Book book, Format format){
         if(format== Format.MOBI){

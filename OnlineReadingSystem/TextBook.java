@@ -5,7 +5,8 @@ public class TextBook extends Book {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-        visitor.visit(this);
+    public Book accept(Visitor visitor) {
+        Book newBook = visitor.visit(this);
+        return newBook;
     }
 }
